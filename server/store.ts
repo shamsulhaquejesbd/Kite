@@ -1458,6 +1458,18 @@ export async function seedSupabaseInitialCatalog(actor: string) {
 
     if (error || !insertedProd) continue;
 
+    if (prod.images && prod.images.length > 0) {
+      await supabaseAdmin.from('product_images').insert(
+        prod.images.map((img, idx) => ({
+          product_id: insertedProd.id,
+          image_url: img.image_url,
+          alt_text: img.alt_text,
+          is_primary: idx === 0,
+          display_order: idx,
+        }))
+      );
+    }
+
     await supabaseAdmin.from('inventory').insert({
       product_id: insertedProd.id,
       current_stock: prod.current_stock,
